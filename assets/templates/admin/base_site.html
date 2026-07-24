@@ -1,4 +1,5 @@
 {% extends "admin/base.html" %}
+{% load static %}
 
 {% block extrastyle %}
 {{ block.super }}
@@ -37,9 +38,13 @@
   #content-main .changelink {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 90px;
     padding: 5px 12px;
     border-radius: 6px;
     background-color: var(--darkened-bg);
+    background-image: none;
     border: 1px solid var(--hairline-color);
     text-decoration: none;
     font-weight: 600;
@@ -48,6 +53,23 @@
   #content-main .addlink:hover,
   #content-main .changelink:hover {
     background-color: var(--selected-row);
+  }
+  #content-main .addlink::before,
+  #content-main .changelink::before {
+    content: '';
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+  }
+  #content-main .addlink::before {
+    background-image: url("{% static 'admin/img/icon-addlink.svg' %}");
+  }
+  #content-main .changelink::before {
+    background-image: url("{% static 'admin/img/icon-changelink.svg' %}");
   }
   #content-main th, #content-main td {
     white-space: nowrap;
