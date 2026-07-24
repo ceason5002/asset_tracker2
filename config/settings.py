@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -78,7 +79,7 @@ DATABASES = {
         'ENGINE': 'mssql',
         'NAME': 'PoliceAssetTracker',
         'USER': 'django_app',
-        'PASSWORD': 'CHANGE_ME',  # move to an environment variable before committing
+        'PASSWORD': os.environ['DJANGO_APP_DB_PASSWORD'],
         'HOST': r'localhost\SQLEXPRESS',
         'PORT': '',
         'OPTIONS': {
