@@ -1,0 +1,62 @@
+{% extends "assets/base.html" %}
+
+{% block title %}Assets - Asset Tracker{% endblock %}
+
+{% block content %}
+<h1>Assets</h1>
+<div class="card">
+  <table>
+    <thead>
+      <tr>
+        <th>Tag</th>
+        <th>Description</th>
+        <th>Category</th>
+        <th>Precinct</th>
+        <th>Status</th>
+        <th>Checked out to</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for asset in assets %}
+      <tr>
+        <td>{{ asset.asset_tag }}</td>
+        <td>{{ asset.description }}</td>
+        <td>{{ asset.category }}</td>
+        <td>{{ asset.precinct.name }}</td>
+        <td>
+          {% if asset.status == 'Available' %}
+            <span class="badge available">{{ asset.status }}</span>
+          {% elif asset.status == 'Checked Out' %}
+            <span class="badge checked-out">{{ asset.status }}</span>
+          {% elif asset.status == 'Maintenance' %}
+            <span class="badge maintenance">{{ asset.status }}</span>
+          {% else %}
+            <span class="badge retired">{{ asset.status }}</span>
+          {% endif %}
+        </td>
+        <td>
+          {% with active=asset.active_checkout %}
+            {% if active %}{{ active.officer }}{% else %}&mdash;{% endif %}
+          {% endwith %}
+        </td>
+        <td>
+          {% if asset.status == 'Available' %}
+            <a class="btn btn-primary" href="{% url 'assets:checkout_asset' asset.asset_id %}">Check out</a>
+          {% elif asset.status == 'Checked Out' and asset.active_checkout %}
+            <form class="inline" method="post" action="{% url 'assets:return_asset' asset.active_checkout.checkout_id %}">
+              {% csrf_token %}
+              <button class="btn btn-secondary" type="submit">Return</button>
+            </form>
+          {% else %}
+            &mdash;
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7">No assets found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

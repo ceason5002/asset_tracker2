@@ -1,0 +1,27 @@
+{% extends "assets/base.html" %}
+
+{% block title %}Check out {{ asset.asset_tag }} - Asset Tracker{% endblock %}
+
+{% block content %}
+<h1>Check out {{ asset.asset_tag }} &mdash; {{ asset.description }}</h1>
+<div class="card" style="padding: 1.25rem 1.5rem;">
+  <form method="post">
+    {% csrf_token %}
+    <div class="field">
+      <label for="officer_id">Officer</label>
+      <select name="officer_id" id="officer_id" required>
+        <option value="" disabled selected>Select an officer&hellip;</option>
+        {% for officer in officers %}
+          <option value="{{ officer.officer_id }}">{{ officer.last_name }}, {{ officer.first_name }} ({{ officer.badge_number }})</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label for="notes">Notes (optional)</label>
+      <textarea name="notes" id="notes" rows="3"></textarea>
+    </div>
+    <button class="btn btn-primary" type="submit">Check out</button>
+    <a class="btn btn-secondary" href="{% url 'assets:asset_list' %}">Cancel</a>
+  </form>
+</div>
+{% endblock %}

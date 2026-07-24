@@ -48,6 +48,10 @@ class Asset(models.Model):
     def __str__(self):
         return f'{self.asset_tag} - {self.description}'
 
+    @property
+    def active_checkout(self):
+        return self.checkouts.filter(returned_at__isnull=True).order_by('-checked_out_at').first()
+
 
 class Checkout(models.Model):
     checkout_id = models.AutoField(db_column='CheckoutId', primary_key=True)

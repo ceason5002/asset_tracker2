@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Asset Tracker{% endblock %}</title>
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --surface: #ffffff;
+    --border: #dfe2e7;
+    --text: #1c2128;
+    --text-muted: #5b6472;
+    --accent: #2f6feb;
+    --accent-text: #ffffff;
+    --success-bg: #e6f6ec;
+    --success-text: #1a7a41;
+    --error-bg: #fdeced;
+    --error-text: #b3261e;
+    --badge-available-bg: #e6f6ec;
+    --badge-available-text: #1a7a41;
+    --badge-checkedout-bg: #fff4e0;
+    --badge-checkedout-text: #96660c;
+    --badge-maintenance-bg: #e8eefc;
+    --badge-maintenance-text: #2f4f9e;
+    --badge-retired-bg: #eceef1;
+    --badge-retired-text: #5b6472;
+  }
+
+  html[data-theme="dark"] {
+    --bg: #14161a;
+    --surface: #1d2026;
+    --border: #2c303a;
+    --text: #e8eaed;
+    --text-muted: #9aa2b1;
+    --accent: #5b8def;
+    --accent-text: #0d1117;
+    --success-bg: #113222;
+    --success-text: #5fd68a;
+    --error-bg: #3a1618;
+    --error-text: #f28b87;
+    --badge-available-bg: #113222;
+    --badge-available-text: #5fd68a;
+    --badge-checkedout-bg: #3a2c0d;
+    --badge-checkedout-text: #f2c14e;
+    --badge-maintenance-bg: #16213d;
+    --badge-maintenance-text: #8fb1f5;
+    --badge-retired-bg: #23262c;
+    --badge-retired-text: #9aa2b1;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) {
+      --bg: #14161a;
+      --surface: #1d2026;
+      --border: #2c303a;
+      --text: #e8eaed;
+      --text-muted: #9aa2b1;
+      --accent: #5b8def;
+      --accent-text: #0d1117;
+      --success-bg: #113222;
+      --success-text: #5fd68a;
+      --error-bg: #3a1618;
+      --error-text: #f28b87;
+      --badge-available-bg: #113222;
+      --badge-available-text: #5fd68a;
+      --badge-checkedout-bg: #3a2c0d;
+      --badge-checkedout-text: #f2c14e;
+      --badge-maintenance-bg: #16213d;
+      --badge-maintenance-text: #8fb1f5;
+      --badge-retired-bg: #23262c;
+      --badge-retired-text: #9aa2b1;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.9rem 1.5rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  header .brand {
+    font-weight: 600;
+    font-size: 1.05rem;
+  }
+
+  header .brand a {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .theme-toggle {
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 0.4rem 0.7rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+
+  main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  .badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+  .badge.available { background: var(--badge-available-bg); color: var(--badge-available-text); }
+  .badge.checked-out { background: var(--badge-checkedout-bg); color: var(--badge-checkedout-text); }
+  .badge.maintenance { background: var(--badge-maintenance-bg); color: var(--badge-maintenance-text); }
+  .badge.retired { background: var(--badge-retired-bg); color: var(--badge-retired-text); }
+
+  .btn {
+    display: inline-block;
+    border: none;
+    border-radius: 6px;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .btn-primary { background: var(--accent); color: var(--accent-text); }
+  .btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+
+  .messages { list-style: none; padding: 0; margin: 0 0 1rem; }
+  .messages li {
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+  .messages li.success { background: var(--success-bg); color: var(--success-text); }
+  .messages li.error { background: var(--error-bg); color: var(--error-text); }
+
+  h1 { font-size: 1.3rem; margin: 0 0 1rem; }
+
+  form.inline { display: inline; }
+
+  select, input[type="text"], textarea {
+    width: 100%;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.9rem;
+  }
+
+  label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    color: var(--text-muted);
+  }
+
+  .field { margin-bottom: 1rem; }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><a href="{% url 'assets:asset_list' %}">Asset Tracker</a></div>
+  <button class="theme-toggle" id="theme-toggle" type="button">Toggle theme</button>
+</header>
+<main>
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+<script>
+  (function () {
+    var root = document.documentElement;
+    var toggle = document.getElementById('theme-toggle');
+    var stored = localStorage.getItem('theme');
+    if (stored) root.setAttribute('data-theme', stored);
+
+    toggle.addEventListener('click', function () {
+      var current = root.getAttribute('data-theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var effectiveDark = current ? current === 'dark' : prefersDark;
+      var next = effectiveDark ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    });
+  })();
+</script>
+</body>
+</html>

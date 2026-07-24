@@ -1,3 +1,70 @@
-from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 
-# Create your views here.
+from .models import Asset, Checkout, Officer
+
+
+@login_required
+def asset_list(request):
+    assets = Asset.objects.select_related('precinct').order_by('asset_tag')
+
+    status = request.GET.get('status')
+    if status:
+        assets = assets.filter(status=status)
+
+    return render(request, 'assets/asset_list.html', {
+        'assets': assets,
+        'status_filter': status or '',
+    })
+
+
+@login_required
+def checkout_asset(request, asset_id):
+    asset = get_object_or_404(Asset, pk=asset_id)
+
+    if asset.status != 'Available':
+        messages.error(request, f'{asset.asset_tag} is not available to check out.')
+        return redirect('assets:asset_list')
+
+    officers = Officer.objects.filter(is_active=True).order_by('last_name', 'first_name')
+
+    if request.method == 'POST':
+        officer_id = request.POST.get('officer_id')
+        notes = request.POST.get('notes', '').strip()
+        officer = get_object_or_404(Officer, pk=officer_id, is_active=True)
+
+        Checkout.objects.create(
+            asset=asset,
+            officer=officer,
+            checked_out_at=timezone.now(),
+            notes=notes or None,
+        )
+        asset.status = 'Checked Out'
+        asset.save(update_fields=['status'])
+
+        messages.success(request, f'{asset.asset_tag} checked out to {officer}.')
+        return redirect('assets:asset_list')
+
+    return render(request, 'assets/checkout_form.html', {
+        'asset': asset,
+        'officers': officers,
+    })
+
+
+@login_required
+def return_asset(request, checkout_id):
+    checkout = get_object_or_404(Checkout, pk=checkout_id, returned_at__isnull=True)
+
+    if request.method == 'POST':
+        checkout.returned_at = timezone.now()
+        checkout.save(update_fields=['returned_at'])
+
+        asset = checkout.asset
+        asset.status = 'Available'
+        asset.save(update_fields=['status'])
+
+        messages.success(request, f'{asset.asset_tag} returned by {checkout.officer}.')
+
+    return redirect('assets:asset_list')
