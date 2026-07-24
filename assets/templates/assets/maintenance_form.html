@@ -1,0 +1,26 @@
+{% extends "assets/base.html" %}
+
+{% block title %}Log maintenance - {{ asset.asset_tag }} - Asset Tracker{% endblock %}
+
+{% block content %}
+<h1>Log maintenance &mdash; {{ asset.asset_tag }} ({{ asset.description }})</h1>
+<div class="card" style="padding: 1.25rem 1.5rem;">
+  <form method="post">
+    {% csrf_token %}
+    <div class="field">
+      <label for="performed_by">Performed by</label>
+      <input type="text" name="performed_by" id="performed_by" value="{{ default_performed_by }}" required>
+    </div>
+    <div class="field">
+      <label for="description">Description</label>
+      <textarea name="description" id="description" rows="3" required></textarea>
+    </div>
+    <div class="field">
+      <label for="next_due_date">Next due date (optional)</label>
+      <input type="date" name="next_due_date" id="next_due_date">
+    </div>
+    <button class="btn btn-primary" type="submit">Send to maintenance</button>
+    <a class="btn btn-secondary" href="{% url 'assets:asset_list' %}">Cancel</a>
+  </form>
+</div>
+{% endblock %}

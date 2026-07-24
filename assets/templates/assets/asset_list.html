@@ -43,10 +43,16 @@
         <td>
           {% if asset.status == 'Available' %}
             <a class="btn btn-primary" href="{% url 'assets:checkout_asset' asset.asset_id %}">Check out</a>
+            <a class="btn btn-secondary" href="{% url 'assets:log_maintenance' asset.asset_id %}">Log maintenance</a>
           {% elif asset.status == 'Checked Out' and asset.active_checkout %}
             <form class="inline" method="post" action="{% url 'assets:return_asset' asset.active_checkout.checkout_id %}">
               {% csrf_token %}
               <button class="btn btn-secondary" type="submit">Return</button>
+            </form>
+          {% elif asset.status == 'Maintenance' %}
+            <form class="inline" method="post" action="{% url 'assets:complete_maintenance' asset.asset_id %}">
+              {% csrf_token %}
+              <button class="btn btn-secondary" type="submit">Mark available</button>
             </form>
           {% else %}
             &mdash;

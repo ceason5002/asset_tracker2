@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from .models import Asset, Checkout, Officer
+from .models import Asset, Checkout, MaintenanceLog, Officer
 
 
 @login_required
@@ -66,5 +66,49 @@ def return_asset(request, checkout_id):
         asset.save(update_fields=['status'])
 
         messages.success(request, f'{asset.asset_tag} returned by {checkout.officer}.')
+
+    return redirect('assets:asset_list')
+
+
+@login_required
+def log_maintenance(request, asset_id):
+    asset = get_object_or_404(Asset, pk=asset_id)
+
+    if asset.status != 'Available':
+        messages.error(request, f'{asset.asset_tag} must be Available to send it to maintenance.')
+        return redirect('assets:asset_list')
+
+    if request.method == 'POST':
+        performed_by = request.POST.get('performed_by', '').strip()
+        description = request.POST.get('description', '').strip()
+        next_due_date = request.POST.get('next_due_date') or None
+
+        MaintenanceLog.objects.create(
+            asset=asset,
+            performed_at=timezone.now(),
+            performed_by=performed_by,
+            description=description,
+            next_due_date=next_due_date,
+        )
+        asset.status = 'Maintenance'
+        asset.save(update_fields=['status'])
+
+        messages.success(request, f'{asset.asset_tag} sent to maintenance.')
+        return redirect('assets:asset_list')
+
+    return render(request, 'assets/maintenance_form.html', {
+        'asset': asset,
+        'default_performed_by': request.user.get_username(),
+    })
+
+
+@login_required
+def complete_maintenance(request, asset_id):
+    asset = get_object_or_404(Asset, pk=asset_id, status='Maintenance')
+
+    if request.method == 'POST':
+        asset.status = 'Available'
+        asset.save(update_fields=['status'])
+        messages.success(request, f'{asset.asset_tag} marked Available.')
 
     return redirect('assets:asset_list')

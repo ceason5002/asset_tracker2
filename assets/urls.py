@@ -8,4 +8,6 @@ urlpatterns = [
     path('', views.asset_list, name='asset_list'),
     path('<int:asset_id>/checkout/', views.checkout_asset, name='checkout_asset'),
     path('checkouts/<int:checkout_id>/return/', views.return_asset, name='return_asset'),
+    path('<int:asset_id>/log-maintenance/', views.log_maintenance, name='log_maintenance'),
+    path('<int:asset_id>/complete-maintenance/', views.complete_maintenance, name='complete_maintenance'),
 ]
