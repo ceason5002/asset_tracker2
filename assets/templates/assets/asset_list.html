@@ -4,6 +4,30 @@
 
 {% block content %}
 <h1>Assets</h1>
+<form method="get" class="filter-bar">
+  <div class="field">
+    <label for="status">Status</label>
+    <select name="status" id="status" onchange="this.form.submit()">
+      <option value="">All statuses</option>
+      {% for choice in status_choices %}
+        <option value="{{ choice }}" {% if choice == status_filter %}selected{% endif %}>{{ choice }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label for="category">Category</label>
+    <select name="category" id="category" onchange="this.form.submit()">
+      <option value="">All categories</option>
+      {% for cat in categories %}
+        <option value="{{ cat }}" {% if cat == category_filter %}selected{% endif %}>{{ cat }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <button class="btn btn-primary" type="submit">Filter</button>
+  {% if status_filter or category_filter %}
+    <a class="btn btn-secondary" href="{% url 'assets:asset_list' %}">Clear</a>
+  {% endif %}
+</form>
 <div class="card">
   <table>
     <thead>

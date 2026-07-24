@@ -5,18 +5,29 @@ from django.utils import timezone
 
 from .models import Asset, Checkout, MaintenanceLog, Officer
 
+STATUS_CHOICES = ['Available', 'Checked Out', 'Maintenance', 'Retired']
+
 
 @login_required
 def asset_list(request):
     assets = Asset.objects.select_related('precinct').order_by('asset_tag')
 
-    status = request.GET.get('status')
+    status = request.GET.get('status', '')
+    category = request.GET.get('category', '')
+
     if status:
         assets = assets.filter(status=status)
+    if category:
+        assets = assets.filter(category=category)
+
+    categories = Asset.objects.order_by('category').values_list('category', flat=True).distinct()
 
     return render(request, 'assets/asset_list.html', {
         'assets': assets,
-        'status_filter': status or '',
+        'status_filter': status,
+        'category_filter': category,
+        'status_choices': STATUS_CHOICES,
+        'categories': categories,
     })
 
 

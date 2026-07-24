@@ -1,0 +1,67 @@
+{% extends "admin/base.html" %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  #user-tools {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  #user-tools a:not(.theme-toggle),
+  #user-tools form#logout-form button {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  #user-tools a:not(.theme-toggle):hover,
+  #user-tools form#logout-form button:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  #user-tools form#logout-form {
+    margin: 0;
+    display: inline-flex;
+  }
+
+  #content-main .addlink,
+  #content-main .changelink {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 6px;
+    background-color: var(--darkened-bg);
+    border: 1px solid var(--hairline-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.15s ease;
+  }
+  #content-main .addlink:hover,
+  #content-main .changelink:hover {
+    background-color: var(--selected-row);
+  }
+  #content-main th, #content-main td {
+    white-space: nowrap;
+  }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var userTools = document.getElementById('user-tools');
+    if (!userTools) return;
+    Array.from(userTools.childNodes).forEach(function (node) {
+      if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() === '/') {
+        node.remove();
+      }
+    });
+  });
+</script>
+{% endblock %}
