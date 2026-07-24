@@ -4,6 +4,7 @@ All notable changes to this project are logged here by Claude Code.
 Newest entries go at the top. Format: `YYYY-MM-DD HH:MM - summary`
 
 ## Unreleased
+- 2026-07-24 - Rewrote README.md to reflect the actual project (stack, file layout, setup steps, Mixed Mode auth requirement, schema-change convention) instead of the placeholder text.
 - 2026-07-24 - Widened the admin index Add/Change buttons (min-width) and replaced Django's default left-aligned background-icon with a flex layout (icon as ::before, same admin/img/icon-addlink.svg / icon-changelink.svg) so the icon and text are centered together as a unit. Verified in both light and dark admin themes.
 - 2026-07-24 - Added status/category filtering to the asset list (assets/views.py, asset_list.html filter bar). Overrode admin/base_site.html to restyle the admin header's View site/Change password/Log out links and the app-index Add/Change links as proper bordered buttons (using Django's own theme CSS variables so it still respects the built-in light/dark toggle) instead of plain hyperlinks; a small script strips the leftover "/" separator text nodes in the header. Verified all of it in a real browser (filtering, clearing filters, both admin themes).
 - 2026-07-24 - Fixed "View site" link in Django admin (pointed at / which had no route, 404) by redirecting / to assets:asset_list.
