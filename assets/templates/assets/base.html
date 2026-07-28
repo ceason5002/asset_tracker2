@@ -102,14 +102,20 @@
   }
 
   .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border: 1px solid var(--border);
-    background: var(--bg);
+    background: color-mix(in srgb, var(--text) 8%, transparent);
     color: var(--text);
     border-radius: 6px;
-    padding: 0.4rem 0.7rem;
+    padding: 6px 14px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.15s ease;
   }
+  .theme-toggle:hover { background: color-mix(in srgb, var(--text) 15%, transparent); }
 
   main {
     max-width: 1000px;
@@ -159,17 +165,30 @@
   .badge.retired { background: var(--badge-retired-bg); color: var(--badge-retired-text); }
 
   .btn {
-    display: inline-block;
-    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 6px;
-    padding: 0.4rem 0.8rem;
-    font-size: 0.85rem;
+    padding: 6px 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
+    border: 1px solid transparent;
+    transition: background 0.15s ease;
   }
-  .btn-primary { background: var(--accent); color: var(--accent-text); }
-  .btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--accent-text);
+    border-color: var(--accent);
+  }
+  .btn-primary:hover { background: color-mix(in srgb, var(--accent) 85%, black); }
+  .btn-secondary {
+    background: color-mix(in srgb, var(--text) 8%, transparent);
+    color: var(--text);
+    border-color: var(--border);
+  }
+  .btn-secondary:hover { background: color-mix(in srgb, var(--text) 15%, transparent); }
 
   .messages { list-style: none; padding: 0; margin: 0 0 1rem; }
   .messages li {
@@ -224,6 +243,12 @@
   <div style="display:flex; align-items:center; gap:0.6rem;">
     {% if user.is_superuser %}
       <a class="btn btn-secondary" href="/admin/">Admin</a>
+    {% endif %}
+    {% if user.is_authenticated %}
+      <form method="post" action="{% url 'logout' %}" class="inline">
+        {% csrf_token %}
+        <button class="btn btn-secondary" type="submit">Logout</button>
+      </form>
     {% endif %}
     <button class="theme-toggle" id="theme-toggle" type="button">Toggle theme</button>
   </div>

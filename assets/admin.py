@@ -2,6 +2,10 @@ from django.contrib import admin
 
 from .models import Asset, Checkout, MaintenanceLog, Officer, Precinct
 
+admin.site.site_header = 'Police Asset Tracker'
+admin.site.site_title = 'Police Asset Tracker'
+admin.site.index_title = 'Administration'
+
 
 @admin.register(Precinct)
 class PrecinctAdmin(admin.ModelAdmin):
