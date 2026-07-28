@@ -221,7 +221,12 @@
 <body>
 <header>
   <div class="brand"><a href="{% url 'assets:asset_list' %}">Asset Tracker</a></div>
-  <button class="theme-toggle" id="theme-toggle" type="button">Toggle theme</button>
+  <div style="display:flex; align-items:center; gap:0.6rem;">
+    {% if user.is_superuser %}
+      <a class="btn btn-secondary" href="/admin/">Admin</a>
+    {% endif %}
+    <button class="theme-toggle" id="theme-toggle" type="button">Toggle theme</button>
+  </div>
 </header>
 <main>
   {% if messages %}
