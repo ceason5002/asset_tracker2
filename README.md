@@ -30,6 +30,12 @@ managed by hand in SQL rather than Django migrations.
 - `assets/templates/admin/base_site.html` — light styling tweaks to the
   Django admin (buttons instead of plain text links in the header and
   app index), left alone otherwise.
+- `scripts/run_server.ps1` — starts the app for internal LAN use via
+  `waitress` (see Deployment below).
+- `scripts/setup_scheduled_task.ps1` — one-time setup that registers a
+  Windows Scheduled Task so the app auto-starts on reboot.
+- `scripts/add_firewall_rule.ps1` — one-time setup opening the app's port
+  to other machines on the LAN.
 - `CHANGELOG.md` — running log of changes, newest entries on top.
 
 ## Setup
@@ -56,6 +62,25 @@ managed by hand in SQL rather than Django migrations.
    python manage.py createsuperuser
    python manage.py runserver
    ```
+
+## Deployment (internal LAN, this server)
+
+This runs directly on the machine that hosts SQL Server rather than a
+public cloud host — the database only exists on this network, and the
+data (officer names, badge numbers, firearm assignments) shouldn't be
+exposed to the internet.
+
+1. Environment variables (set once as user env vars — see `settings.py`
+   for how each is used): `DJANGO_APP_DB_PASSWORD`, `DJANGO_SECRET_KEY`,
+   `DJANGO_DEBUG` (`False`), `DJANGO_ALLOWED_HOSTS` (this machine's LAN
+   IP, plus `localhost,127.0.0.1`).
+2. `python manage.py collectstatic --noinput`
+3. Start command: `scripts/run_server.ps1`, which runs
+   `python -m waitress --host=0.0.0.0 --port=8000 config.wsgi:application`.
+4. One-time: run `scripts/setup_scheduled_task.ps1` and
+   `scripts/add_firewall_rule.ps1` from an elevated PowerShell, so the
+   app auto-starts on reboot and is reachable from other machines on the
+   LAN at `http://<this machine's LAN IP>:8000/assets/`.
 
 ## Using it
 
